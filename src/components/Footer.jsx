@@ -1,7 +1,7 @@
 const Footer = ()=>{
     return(       
         <div>
-            <p>Created by Rhythan Varsha J</p>
+            <p>Created by ARUN</p>
         </div>
     )
 }

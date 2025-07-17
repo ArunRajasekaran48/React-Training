@@ -1,63 +1,89 @@
-import { useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
+import "./Register.css";
 
-const Register = ()=>{
+const Register = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    userName: "",
+    roleNames: [],
+  });
 
-  const[name,setName] = useState("");
-  const[email,setEmail] = useState("");
-  const[password,setPassword] = useState("");
-  const[userName,setUserName] = useState("");
-  const[roleNames,setRoleNames] = useState("");
-
-  const navigate = useNavigate()
-
-  async function handleSubmit(event){
-    event.preventDefault();
-    try{
-
-      const response = await axios.post("https://springboot1-backend-1.onrender.com/api/auth/register",{
-        name ,
-        email , 
-        password , 
-        userName , 
-        roleNames : roleNames.split(',').map(role=>role.trim())
-      });
-      console.log(response);
-      navigate("/dashboard")
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "roleNames") {
+      const selected = Array.from(
+        e.target.selectedOptions,
+        (option) => option.value
+      );
+      setForm({ ...form, [name]: selected });
+    } else {
+      setForm({ ...form, [name]: value });
     }
-    catch(e){
-      console.log("Register error " , e);
-      alert("Register error!!");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:3001/api/auth/register", form);
+      alert("Registered Successfully!");
+    } catch (error) {
+      console.error("Registration Error", error);
+      alert("Error while registering");
     }
-  }
+  };
 
-  return(
-    <>
-      <div>
-        <h1>Register Form</h1>
-        <form onSubmit={handleSubmit}>
+  return (
+    <div className="register-container">
+      <h2 className="form-heading">Register</h2>
+      <form className="register-form" onSubmit={handleSubmit}>
+        <label htmlFor="name">Full Name</label>
+        <input name="name" value={form.name} onChange={handleChange} required />
 
-          <label htmlFor = "name"> Name : </label>
-          <input type = "text" id = "name" value = {name} onChange = {(e)=>setName(e.target.value)}/>
-          <br/><br/>
-          <label htmlFor = "email">Email : </label>
-          <input type = "text" id = "email" value = {email} onChange = {(e)=>setEmail(e.target.value)}/>
-          <br/><br/>
-          <label htmlFor = "password">Password : </label>
-          <input type = "password" id = "password" value = {password} onChange = {(e)=>setPassword(e.target.value)}/>
-          <br/><br/>
-          <label htmlFor = "userName"> Username : </label>
-          <input type = "text" id = "userName" value = {userName} onChange = {(e)=>setUserName(e.target.value)}/>
-          <br/><br/>
-          <label htmlFor = "roleNames"> RoleNames : </label>
-          <input type = "text" id = "roleNames" value = {roleNames} onChange = {(e)=>setRoleNames(e.target.value)}/>
-          <br/><br/>
-          <button type = "submit" > Register</button>
-        </form>
-      </div>
-    </>
-  )
-}
+        <label htmlFor="email">Email</label>
+        <input
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="userName">User Name</label>
+        <input
+          name="userName"
+          value={form.userName}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="password">Password</label>
+        <input
+          name="password"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
+        <label htmlFor="roleNames">Role</label>
+        <select
+          name="roleNames"
+          value={form.roleNames[0] || ""}
+          onChange={(e) => setForm({ ...form, roleNames: [e.target.value] })}
+>
+
+          <option value="admin">User</option>
+          <option value="user">Admin</option>
+          <option value="both">Both</option>
+        </select>
+
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  );
+};
 
 export default Register;
