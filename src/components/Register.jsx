@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Register.css";
 
@@ -24,15 +25,11 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await axios.post("http://localhost:3001/api/auth/register", form);
-      alert("Registered Successfully!");
-    } catch (error) {
-      console.error("Registration Error", error);
-      alert("Error while registering");
-    }
+    // Directly redirect to TaskList page with userName as empId
+    navigate(`/tasklist/${form.userName}`);
   };
 
   return (
